@@ -9,7 +9,7 @@ var GameEngine = (function(GameEngine) {
   let rect_y_r;
   let rect_w_r;
   let rect_h_r;
-
+  let player_speed;
   let score_left = "3";
   let title = "P O N G";
   let text = "";
@@ -37,12 +37,11 @@ var GameEngine = (function(GameEngine) {
       cw = ctx.canvas.width;
       ch = ctx.canvas.height;
       this.ctx = ctx;
-
+      player_speed = 5;
       rect_x_l = 30;
       rect_y_l = ch/2;
       rect_w_l = 20;
       rect_h_l = 200;
-      
       rect_w_r = 20;
       rect_h_r = 500;
       rect_x_r = cw-5;
@@ -51,20 +50,18 @@ var GameEngine = (function(GameEngine) {
       window.addEventListener("keydown", function(evt) {
         Key.onKeyDown(evt.keyCode);        
       });
-
       window.addEventListener("keyup", function(evt) {
         Key.onKeyUp(evt.keyCode);
-      });             
-             
+      });
     }
 
     processInput() {     
       //Inputs del jugador de la izquierda:
       if (Key.isPress(87)) {
-        rect_y_l -= 5;        
+        rect_y_l -= player_speed;        
       }
       if (Key.isPress(83)) {
-        rect_y_l += 5;
+        rect_y_l += player_speed;
       } 
 
       //Input para "iniciar el juego"
@@ -83,6 +80,7 @@ var GameEngine = (function(GameEngine) {
         begin = false;
         text = "Puntaje: " + score;
         rect_h_l = 200;
+        player_speed = 5;
         title = "Fin del juego";
         intro_text = "Presiona [espacio] para reiniciar";
         score_left = "3";
@@ -90,6 +88,7 @@ var GameEngine = (function(GameEngine) {
       }
 
       // //Reubicar las posiciones del jugador en caso se pase...
+      // fix later...
       // if (rect_y_l*2 <= rect_h_l/2) {                
       //   rect_y_l = rect_h_l/2;
       // }
@@ -99,14 +98,20 @@ var GameEngine = (function(GameEngine) {
        
       //En caso el juego haya iniciado, actualizamos la pelota:
       if(begin){                
-      	//Colision con raqueta y aumento de velocidad con 0.10
-        if(this.ball.x < rect_x_l && this.ball.y > (rect_y_l - rect_y_l/2.2) && this.ball.y < (rect_y_l + rect_y_l/2)){
+      	//Colision con raqueta y aumento de velocidad con 0.15
+        if(
+          this.ball.x + this.ball.size < rect_x_l
+            && this.ball.y + this.ball.size > Math.floor(rect_y_l - (rect_h_l/2))
+            && this.ball.y + this.ball.size < Math.floor(rect_y_l + (rect_h_l/2))){
           score = String(parseInt(score) + 1);
           if(parseInt(score) > 0 && parseInt(score) % 5 == 0){
+            //Achica la raqueta del jugador hasta que sea menor o igual a 30.
             if(rect_h_l > 30){
               rect_h_l -= 12;
             }
             this.ball.vx*= -1.15;
+            //Amenta la velocidad de la raqueta.
+            player_speed += 1.5;
           }else{
             this.ball.vx *= -1.00;
           }

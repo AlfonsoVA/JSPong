@@ -7,7 +7,8 @@ var GameEngine = (function(GameEngine) {
       this.y = y;
       this.size = size;      
 
-      this.speed = 500;
+      //this.speed = 500;
+      this.speed = Math.random() * (700 - 500) + 500;
       this.angle = Math.random() * Math.PI/2.2;
       this.vx = Math.cos(this.angle) * this.speed;
       this.vy = Math.sin(this.angle) * this.speed;
